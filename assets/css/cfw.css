@@ -1,0 +1,83 @@
+.cfw-box {
+    margin: 35px;
+    color: #23282D;
+}
+
+.cfw-box-content {
+    margin: 35px 0;
+}
+
+.cfw-box .button-primary,
+.cfw-box .button-primary:hover,
+.cfw-box .button-primary:focus {
+    box-shadow: none;
+    text-shadow: none;
+    outline: none;
+}
+
+.cfw-box .button-primary {
+    transition: all .3s ease;
+    background-color: #6200ea;
+    border-color: #6200ea;
+}
+
+.cfw-box .button-primary:hover,
+.cfw-box .button-primary:focus {
+    border-color: #916cff;
+    background-color: #916cff;
+}
+
+.cfw-box .button-primary.white {
+    transition: all .3s ease;
+    background-color: #fff;
+    border-color: #dedede;
+    color: #424242;
+}
+
+.cfw-box .button-primary.white:hover,
+.cfw-box .button-primary.white:focus {
+    background-color: #fff;
+    border-color: #424242;
+    color: #424242;
+}
+
+.cfw-box .cfw-link {
+    color: #6200ea;
+    border-bottom: 1px solid transparent;
+    text-decoration: none;
+    transition: all .3s ease;
+    padding-bottom: 2px;
+}
+
+.cfw-box .cfw-link:hover {
+    color: #916cff;
+    border-color: #916cff;
+}
+
+.cfw-small {
+    font-size: 11px;
+}
+
+.cfw-box form label {
+    float: left;
+    vertical-align: top;
+    text-align: left;
+    padding: 20px 10px 20px 0;
+    width: 200px;
+    line-height: 1.3;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.cfw-box form select {
+    height: 32px;
+    margin: 12px 10px 20px 0;
+    width: 400px;
+    background-color: #fff;
+    border: 1px solid #aaa;
+}
+
+.cfw-box form .button-primary {
+    margin-top: 20px;
+    display: block;
+}

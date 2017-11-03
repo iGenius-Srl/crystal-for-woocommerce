@@ -1,0 +1,16 @@
+{
+    "name": "iGenius-Srl/crystal-for-woocommerce",
+    "description": "crystal for WooCommerce is the smart plug-in to monitor your e-shop, maximize results and boost your business.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0+",
+    "require": {
+        "composer/installers": "~1.0",
+	"php": ">=5.6"
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url" : "git@github.com:iGenius-Srl/crystal-for-woocommerce.git"
+        }
+    ]
+}

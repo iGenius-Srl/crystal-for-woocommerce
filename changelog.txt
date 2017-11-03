@@ -1,0 +1,7 @@
+*** crystal for WooCommerce Changelog ***
+
+2017-11-03 version 1.0.0
+ * Added changelog
+ * created api to login with crystal
+ * Enabled API KEYS WooCommerce
+ * Enabled Facebook Pixel
