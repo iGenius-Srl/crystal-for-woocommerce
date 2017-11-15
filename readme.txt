@@ -11,6 +11,8 @@ crystal for WooCommerce is the smart plug-in to monitor your e-shop, maximize re
 
 == Description ==
 
+crystal for WooCommerce is the smart plug-in to monitor your e-shop, maximize results and boost your business.
+
 You will be notified in real-time on the perfect time to run a new Facebook and Instagram campaign or a flash sale to create some buzz around your new or best selling products and those which need a little sales lift.
 
 It’s easy as pie: check the preview, choose a budget and start your new campaign in the blink of an eye. crystal will take care of everything, automatically promoting your content to the right targets and at the right time for you.
