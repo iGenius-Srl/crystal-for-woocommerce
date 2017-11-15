@@ -12,7 +12,8 @@
 * @package crystalCommerce
 */
 
-const CRYSTAL_URL = 'https://crystal.io';
+// const CRYSTAL_URL = 'https://crystal.io';
+const CRYSTAL_URL = 'https://crystaldata.io';
 const CRYSTAL_API_URL = CRYSTAL_URL.'/api';
 const WEBHOOK_URL = CRYSTAL_API_URL.'/webhook/woocommerce';
 const REST_API_URL = 'cfw-api/v1';
@@ -42,7 +43,6 @@ if (!class_exists('WC_Crystalcommerce') ) :
 
         public function cfw_init() {
             $access_token = get_option('cfw_at');
-            print_r($access_token);
             if ($access_token != false) {
                 // refresh user infos
                 $wc_api = new CFW_Api($access_token);
@@ -50,7 +50,6 @@ if (!class_exists('WC_Crystalcommerce') ) :
             }
             add_action( 'admin_menu', array($this, 'cfw_menu_page') );
             add_action( 'transition_post_status', array( $this, 'cfw_set_hooks'), 10, 3);
-            add_action( 'added_post_meta', array( $this, 'cfw_post_updated'), 10, 4);
             add_action( 'updated_post_meta',  array( $this, 'cfw_post_updated'), 10, 4);
             add_action( 'profile_update',  array( $this, 'cfw_update_customer'), 10, 2);
             add_action( 'woocommerce_new_customer',  array( $this, 'cfw_new_customer'), 10, 2);
@@ -139,7 +138,8 @@ if (!class_exists('WC_Crystalcommerce') ) :
         */
         public static function cfw_post_updated($meta_id, $postID, $meta_key, $meta_value){
             $post = get_post($postID);
-            if ( array_search($post->post_type, DEFAULT_POST_TYPES) >= 0 ) {
+
+            if ($post->post_status === 'publish' && array_search($post->post_type, DEFAULT_POST_TYPES) >= 0 ) {
                 $WC_Webhooks = new WC_Webhooks($post);
                 $args = [
                     'id' => $postID,
@@ -195,7 +195,6 @@ if (!class_exists('WC_Crystalcommerce') ) :
     	public static function cfw_activation_success() {
             update_option( 'woocommerce_api_enabled', 'yes', '', 'yes' );
             self::cfw_activate_pixel();
-            self::generateKeys();
             update_option( 'cfw_redirect', 'yes', '', 'yes' );
 
       	}
@@ -206,55 +205,12 @@ if (!class_exists('WC_Crystalcommerce') ) :
             }
         }
 
-        /**
-         * Activate API keys and generate
-         */
-        public static function generateKeys() {
-            global $woocommerce;
-
-            //ajax admin url
-            $url = admin_url( 'admin-ajax.php' );
-            //_nonce code
-            $update_api_nonce = wp_create_nonce( 'update-api-key' );
-            $response = wp_remote_post( $url, [
-                'method' => 'POST',
-                'timeout' => 45,
-                'redirection' => 5,
-                'httpversion' => '1.0',
-                'blocking' => true,
-                'headers' => ['Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'],
-                'cookies' => $_COOKIE,
-                'body' => [
-                    'action' => 'woocommerce_update_api_key',
-                    'security' =>    $update_api_nonce,
-                    'key_id' =>      0,
-                    'user' =>        get_current_user_id(),
-                    'description' => 'crystal_api',
-                    'permissions' => 'read_write'
-                ],
-            ]);
-
-            if ( is_wp_error( $response ) ) {
-                $error_message = $response->get_error_message();
-                echo "Something went wrong: $error_message";
-            } else {
-                if($response['body'] !== '0') {
-                    $responseData = json_decode($response['body'])->data;
-                    $WC_Handshake_Api = new WC_Handshake_Api(
-                        $responseData->consumer_key,
-                        $responseData->consumer_secret);
-                }
-
-            }
-        }
-
         public static function cfw_unistall() {
             $access_token = get_option('cfw_at');
             if ($access_token != false) {
                 // plugin deactivation call
-                //TODO: REMOVE COMMENT
-                //$wc_api = new CFW_Api($access_token);
-                //$wc_api->sendPluginDeactivation();
+                $wc_api = new CFW_Api($access_token);
+                $wc_api->sendPluginDeactivation();
             }
             delete_option('cfw_at');
             delete_option('cfw_plan');

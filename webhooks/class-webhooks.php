@@ -11,23 +11,25 @@ class WC_Webhooks {
         $this->item = $post;
         $this->cfw_at = get_option('cfw_at', '');
     }
-
     public function post($action, $args = []) {
         $date = new DateTime();
-        $response = wp_remote_post( WEBHOOK_URL . '/' . $this->item['post_type'],
+        $response = wp_remote_post( WEBHOOK_URL . '/' . $this->item->post_type,
             [
                 'method' => 'POST',
                 'timeout' => 45,
                 'redirection' => 5,
                 'httpversion' => '1.0',
                 'blocking' => true,
-                'headers' => ['Content-Type' => 'application/json'],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'access-token' => $this->cfw_at,
+                    'referer' => admin_url('options-general.php?page=cfw_settings')
+                ],
                 'cookies' => $_COOKIE,
                 'body' => json_encode([
-                    'cfw_at' => $this->cfw_at,
-                    'action' => $action,
+                    'event' => $action,
                     'timestamp' => $date->getTimestamp(),
-                    'type' => $this->item['post_type'],
+                    'type' => $this->item->post_type,
                     'data' => $args // updated post
             ]),
         ]);

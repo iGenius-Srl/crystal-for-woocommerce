@@ -6,18 +6,19 @@
 class WC_Pixels_Api {
     public function __construct() {
     }
-
+    //TODO: updated header
     public static function list() {
         $response = wp_remote_get( WEBHOOK_URL.'/pixels', array(
             'timeout' => 45,
             'redirection' => 5,
             'httpversion' => '1.0',
             'blocking' => true,
-            'headers' => array('Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'),
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
+                'access-token' => get_option('cfw_at', '')
+            ],
             'cookies' => $_COOKIE,
-            'body' => array(
-                'cfw_at' => get_option('cfw_at', ''),
-            ),
+            'body' => null,
         ));
         $code = $response['response']['code'];
         if ( $code === 404 ) {
@@ -32,20 +33,63 @@ class WC_Pixels_Api {
             $responseData = $response->body;
             $pixels = $responseData->pixels;
             $activePixel = count($pixels) > 0 ? $pixels[0] : null;
-            add_option( 'cfw_pixels', $pixels);
-            add_option( 'cfw_active_pixel', $activePixel, '', 'yes' );
-            if(count($pixels) > 0) {
-                update_option( 'facebook_config', [
-                    'pixel_id' => $activePixel->id,
-                    'use_pii' => 0
-                ], '', 'yes' );
+            $optionActivePixel = get_option('cfw_active_pixel', null);
+            if($optionActivePixel) {
+                update_option( 'cfw_pixels', $pixels);
+                $existAP = false;
+                foreach($pixels as $index => $pixel) {
+                    if($pixel->id === $optionActivePixel->id) {
+                        $existAP = true;
+                    }
+                }
+                if(!$existAP) {
+                    update_option( 'cfw_active_pixel', $activePixel, '', 'yes' );
+                    if(count($pixels) > 0) {
+                        update_option( 'facebook_config', [
+                            'pixel_id' => $optionActivePixel->id,
+                            'use_pii' => 0
+                        ], '', 'yes' );
+                    }
+                    $WC_Webhooks = new WC_Webhooks($pixels[0]);
+                    $args = [
+                        'field' => 'active_pixel_id',
+                        'value' => $optionActivePixel->id
+                    ];
+                    $WC_Webhooks->update($args);
+                }else {
+                    update_option( 'cfw_active_pixel', $activePixel, '', 'yes' );
+                    if(count($pixels) > 0) {
+                        update_option( 'facebook_config', [
+                            'pixel_id' => $activePixel->id,
+                            'use_pii' => 0
+                        ], '', 'yes' );
+                    }
+                    $WC_Webhooks = new WC_Webhooks($pixels[0]);
+                    $args = [
+                        'field' => 'active_pixel_id',
+                        'value' => $activePixel->id
+                    ];
+                    $WC_Webhooks->update($args);
+                }
+
+
+            }else {
+                add_option( 'cfw_pixels', $pixels);
+                add_option( 'cfw_active_pixel', $activePixel, '', 'yes' );
+                if(count($pixels) > 0) {
+                    update_option( 'facebook_config', [
+                        'pixel_id' => $activePixel->id,
+                        'use_pii' => 0
+                    ], '', 'yes' );
+                }
+                $WC_Webhooks = new WC_Webhooks($pixels[0]);
+                $args = [
+                    'field' => 'active_pixel_id',
+                    'value' => $activePixel->id
+                ];
+                $WC_Webhooks->update($args);
             }
-            $WC_Webhooks = new WC_Webhooks($pixels[0]);
-            $args = [
-                'field' => 'active_pixel_id',
-                'value' => $activePixel->id
-            ];
-            $WC_Webhooks->update($args);
+
         }
     }
 }

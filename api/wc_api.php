@@ -11,13 +11,17 @@ class CFW_Api {
     }
 
     public function getUserData() {
-        $response = wp_remote_get( WEBHOOK_URL.'/getUserData', [
+        $response = wp_remote_get( WEBHOOK_URL.'/brandData', [
             'method' => 'GET',
             'timeout' => 45,
             'redirection' => 5,
             'httpversion' => '2.0',
             'blocking' => true,
-            'headers' => ['Content-Type' => 'application/json', 'access-token' => $this->acccess_token],
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'access-token' => $this->acccess_token,
+                'referer' => admin_url('options-general.php?page=cfw_settings')
+            ],
             'cookies' => $_COOKIE
         ]);
         $code = $response['response']['code'];
@@ -30,7 +34,7 @@ class CFW_Api {
             <?});
         } else {
             $response = json_decode($response['body']);
-            $responseData = $response->body;
+            $responseData = $response->data;
             // success call
             $pixels = $responseData->pixels;
             $plan = $responseData->plan;
@@ -60,7 +64,7 @@ class CFW_Api {
             }
 
             //update user plan
-            update_option( 'cfw_plan', $responseData->cfw_plan, '', 'yes' );
+            update_option( 'cfw_plan', $responseData->plan, '', 'yes' );
             // update user pixelse and active pixel
             update_option( 'cfw_pixels', $pixels);
             update_option( 'cfw_active_pixel', $activePixel);
@@ -69,6 +73,11 @@ class CFW_Api {
                     'pixel_id' => $activePixel['id'],
                     'use_pii' => 0
                 ], '', 'yes' );
+                $WC_Webhooks = new WC_Webhooks($pixels[0]);
+                $args = [
+                    'field' => 'active_pixel_id',
+                    'value' => $activePixel['id']
+                ];
             } else {
                 update_option( 'facebook_config', [
                     'pixel_id' => 0,

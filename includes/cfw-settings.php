@@ -52,6 +52,7 @@
         else:
             $cfw_at = isset($_GET['cfw_at']) ? $_GET['cfw_at'] : null;
             $cfw_plan = isset($_GET['cfw_plan']) ? $_GET['cfw_plan'] : null;
+
             $cfw_saved_options = isset($_GET['saved_options']) ? $_GET['saved_options'] : null;
             if($cfw_at && $cfw_at !== '' && $cfw_plan && $cfw_plan !== '') : // User is from crystal_login
                 saveOptionsAndRedirect($_GET, admin_url('options-general.php?page=cfw_settings&saved_options'));
@@ -62,11 +63,20 @@
                 <p>crystal for WooCommerce has been successfully installed.</p>
                 <p>To get started login with crystal or sign-up if you don’t have an account.</p>
                 <?php
-                $login_url = CRYSTAL_URL.'/login/woocommmerce';?>
+                $date = new DateTime();
+                $websiteUrl = get_site_url();
+                $websiteName = get_bloginfo('name');
+                $timestamp =  $date->getTimestamp();
+                $redirectUri = admin_url('options-general.php?page=cfw_settings');
+                $wcKeys = generateKeys();
+                $apiKey = $wcKeys->consumer_key;
+                $apiSecret = $wcKeys->consumer_secret;
+                $QP = 'domain='.$websiteUrl.'&name='.$websiteName.'&timestamp='.$timestamp.'&redirectUri='.$redirectUri.'&apiKey='.$apiKey.'&apiSecret='.$apiSecret;
+                $login_url = CRYSTAL_URL.'/login/woocommerce/domain?'.$QP;?>
                 <a id="cfw-login" class="button-primary" href="<?=$login_url?>" title="<?php esc_attr_e( 'Login with crystal.io' ); ?>">
                     <?php esc_attr_e( 'Login with crystal.io' ); ?>
                 </a>
-                <a href="<?=CRYSTAL_URL?>" class="button-primary white" title="<?php esc_attr_e( 'Sign up' ); ?>">
+                <a href="<?=CRYSTAL_URL?>/action/woocommerceSignup/<?= $timestamp; ?>" class="button-primary white" title="<?php esc_attr_e( 'Sign up' ); ?>">
                     <?php esc_attr_e( 'Sign up' ); ?>
                 </a>
             <?php endif;
@@ -93,7 +103,7 @@ function updatePixels($pixels) {
             'field' => 'active_pixel_id',
             'value' => $pixels[$pixelKey]->id
         ];
-        //$WC_Webhooks->update($args);  TODO: ENABLE
+        $WC_Webhooks->update($args);
     }
 }
 
@@ -105,11 +115,50 @@ function updatePixels($pixels) {
 function saveOptionsAndRedirect($options, $redirect_url){
     foreach($options as $index => $value) {
         if(strrpos($index, 'cfw') !== false) {
-            echo $value;
             update_option($index, $value);
         }
     }
     wp_redirect($redirect_url);
 
+}
+
+/**
+ * Activate WC Api and generate new keys
+ * @return object of keys
+ */
+function generateKeys() {
+
+    //ajax admin url
+    $url = admin_url( 'admin-ajax.php' );
+    //_nonce code
+    $update_api_nonce = wp_create_nonce( 'update-api-key' );
+    $response = wp_remote_post( $url, [
+        'method' => 'POST',
+        'timeout' => 45,
+        'redirection' => 5,
+        'httpversion' => '1.0',
+        'blocking' => true,
+        'headers' => ['Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'],
+        'cookies' => $_COOKIE,
+        'body' => [
+            'action' => 'woocommerce_update_api_key',
+            'security' =>    $update_api_nonce,
+            'key_id' =>      0,
+            'user' =>        get_current_user_id(),
+            'description' => 'crystal_api',
+            'permissions' => 'read_write'
+        ],
+    ]);
+
+    if ( is_wp_error( $response ) ) {
+        $error_message = $response->get_error_message();
+        echo "Something went wrong: $error_message";
+    } else {
+        if($response['body'] !== '0') {
+            $responseData = json_decode($response['body'])->data;
+            return $responseData;
+        }
+
+    }
 }
 ?>
