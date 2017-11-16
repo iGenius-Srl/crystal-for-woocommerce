@@ -19,7 +19,6 @@ const WEBHOOK_URL = CRYSTAL_API_URL.'/webhook/woocommerce';
 const REST_API_URL = 'cfw-api/v1';
 const DEFAULT_POST_TYPES = ['product', 'shop_coupon', 'shop_order'];
 require_once('api/wc_api.php');
-require_once('api/pixels.php');
 
 if (!class_exists('WC_Crystalcommerce') ) :
 
