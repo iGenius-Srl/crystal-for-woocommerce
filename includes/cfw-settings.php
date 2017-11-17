@@ -16,7 +16,7 @@
                     case '1': // free ?>
                         <p>You must be a crystal premium user to run the plugin.</p>
                         <p>
-                            <a class="cfw-link" href="<?=CRYSTAL_FE_URL ?>/profile/upgrade/1" target="_blank">Upgrade</a> now to access all the features and start promoting your e-shop with effective campaigns!
+                            <a class="cfw-link" href="<?=CRYSTAL_URL ?>/profile/upgrade/1" target="_blank">Upgrade</a> now to access all the features and start promoting your e-shop with effective campaigns!
                         </p>
                         <?php break;
                     case '3': // enterprise
@@ -43,7 +43,7 @@
                         <?php else: ?>
                             <p>Almost done…</p>
                             <p>
-                                Activate <a class="cfw-link" href="<?=CRYSTAL_FE_URL ?>/campaigns/facebook_marketing" target="_blank">"Facebook Campaigns"</a> on crystal to complete the configuration and start promoting your business with effective campaigns!
+                                Activate <a class="cfw-link" href="<?=CRYSTAL_URL ?>/campaigns/facebook_marketing" target="_blank">"Facebook Campaigns"</a> on crystal to complete the configuration and start promoting your business with effective campaigns!
                             </p>
                             <?php endif;
                         break;
@@ -72,11 +72,11 @@
                 $apiKey = $wcKeys->consumer_key;
                 $apiSecret = $wcKeys->consumer_secret;
                 $QP = 'domain='.$websiteUrl.'&name='.$websiteName.'&timestamp='.$timestamp.'&redirectUri='.$redirectUri.'&apiKey='.$apiKey.'&apiSecret='.$apiSecret;
-                $login_url = CRYSTAL_FE_URL.'/login/woocommerce/domain?'.$QP;?>
+                $login_url = CRYSTAL_URL.'/login/woocommerce/domain?'.$QP;?>
                 <a id="cfw-login" class="button-primary" href="<?=$login_url?>" title="<?php esc_attr_e( 'Login with crystal.io' ); ?>">
                     <?php esc_attr_e( 'Login with crystal.io' ); ?>
                 </a>
-                <a href="<?=CRYSTAL_FE_URL?>/action/woocommerceSignup/<?= $timestamp; ?>" class="button-primary white" title="<?php esc_attr_e( 'Sign up' ); ?>">
+                <a href="<?=CRYSTAL_URL?>/action/woocommerceSignup/<?= $timestamp; ?>" class="button-primary white" title="<?php esc_attr_e( 'Sign up' ); ?>">
                     <?php esc_attr_e( 'Sign up' ); ?>
                 </a>
             <?php endif;
