@@ -25,7 +25,7 @@ class CFW_Api {
             'cookies' => $_COOKIE
         ]);
         $code = $response['response']['code'];
-        if ( $code === 404 ) {
+        if ( $code !== 200 ) {
             $error_message = $code = $response['response']['message'];
             add_action('admin_notices', function() {?>
                 <div class="error below-h3">
@@ -44,13 +44,14 @@ class CFW_Api {
                 $activePixel = false;
             } else {
                 // user with premium plan
-                $activePixel = get_option('cfw_active_pixel');
+                $activePixel = (array) get_option('cfw_active_pixel');
                 if ($activePixel == false) {
                     // user without active pixel
                     $activePixel = count($pixels) > 0 ? (array) $pixels[0] : false;
                 } else {
                     foreach ($pixels as $pixel) {
                         $found = false;
+                        $pixel = (array) $pixel;
                         if ($pixel['id'] == $activePixel['id']) {
                             $found = true;
                             break;
