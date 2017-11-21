@@ -1,9 +1,20 @@
 *** crystal for WooCommerce Changelog ***
 
-2017-11-16 version 1.0.1
+2017-11-16 version 1.0.4
+ * Updated prod url
+
+2017-11-16 version 1.0.3
+ * Api fix
+
+2017-11-16 version 1.0.2
  * Api improvement
  * get pixel list
  * set active pixel
+
+ 2017-11-16 version 1.0.1
+  * Api improvement
+  * get pixel list
+  * set active pixel
 
 2017-11-03 version 1.0.0
  * Added changelog

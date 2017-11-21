@@ -35,7 +35,7 @@ class WC_Webhooks {
         ]);
 
         $code = $response['response']['code'];
-        if ( $code === 404 ) {
+        if ( $code !== 200 ) {
             $error_message = $code = $response['response']['message'];
             add_action('admin_notices', function() {?>
                 <div class="error below-h3">

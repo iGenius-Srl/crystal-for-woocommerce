@@ -97,12 +97,21 @@ function updatePixels($pixels) {
             'pixel_id' => $pixels[$pixelKey]->id,
             'use_pii' => 0
         ]);
+    if(isset($pixels[$pixelKey])){
         $pixels[$pixelKey]->post_type = 'pixel';
         $WC_Webhooks = new WC_Webhooks($pixels[$pixelKey]);
         $args = [
             'field' => 'active_pixel_id',
             'value' => $pixels[$pixelKey]->id
         ];
+        }else {
+ 	        $pixels[0]->post_type = 'pixel';
+ 	        $WC_Webhooks = new WC_Webhooks($pixels[0]);
+ 	        $args = [
+ 	            'field' => 'active_pixel_id',
+ 	            'value' => $pixels[0]->id
+ 	        ];
+        }
         $WC_Webhooks->update($args);
     }
 }
