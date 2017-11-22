@@ -4,7 +4,7 @@
 * Description: crystal for WooCommerce is the smart plug-in to monitor your e-shop, maximize results and boost your business.
 * Author: crystalfordata
 * Author URI: https://crystal.io/
-* Version: 1.0.4
+* Version: 1.0.5
 * Text Domain: crystal-for-woocommerce
 */
 

@@ -1,5 +1,8 @@
 *** crystal for WooCommerce Changelog ***
 
+2017-11-22 version 1.0.5
+ * Fixed api error on connection
+
 2017-11-16 version 1.0.4
  * Updated prod url
 

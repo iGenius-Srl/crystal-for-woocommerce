@@ -3,7 +3,7 @@ Contributors: crystalfordata
 Tags: e-commerce, e-commerce marketing, e-commerce marketing campaign, e-commerce advisor, smart e-shop, smart e-commerce, woocommerce marketing, social media marketing, auto promotion, woocommerce, facebook, facebook marketing
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2-licensed
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
