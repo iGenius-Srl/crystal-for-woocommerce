@@ -53,6 +53,13 @@ if (!class_exists('WC_Crystalcommerce') ) :
             add_action( 'profile_update',  array( $this, 'cfw_update_customer'), 10, 2);
             add_action( 'woocommerce_new_customer',  array( $this, 'cfw_new_customer'), 10, 2);
             add_action( 'woocommerce_delete_customer',  array( $this, 'cfw_delete_customer'), 10, 2);
+            add_filter( 'site_transient_update_plugins', array($this, 'cfw_disable_fb_updates'));
+        }
+
+        public function cfw_disable_fb_updates($value) {
+            unset( $value->response['crystal-for-woocommerce/facebook-for-wordpress.php'] );
+            return $value;
+
         }
 
         public function detect_woocommerce_exist() {

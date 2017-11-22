@@ -45,7 +45,7 @@ class CFW_Api {
             } else {
                 // user with premium plan
                 $activePixel = (array) get_option('cfw_active_pixel');
-                if ($activePixel == false) {
+                if (isset($activePixel['id'])) {
                     // user without active pixel
                     $activePixel = count($pixels) > 0 ? (array) $pixels[0] : false;
                 } else {
