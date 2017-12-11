@@ -59,27 +59,34 @@
             elseif($cfw_saved_options !== null):?>
                 <h3>Congrats!</h3>
                 <p>crystal for WooCommerce has been successfully configured.</p>
-            <?php else: // Show login button ?>
-                <p>crystal for WooCommerce has been successfully installed.</p>
-                <p>To get started login with crystal or sign-up if you don’t have an account.</p>
-                <?php
-                $date = new DateTime();
-                $websiteUrl = get_site_url();
-                $websiteName = get_bloginfo('name');
-                $timestamp =  $date->getTimestamp();
-                $redirectUri = admin_url('options-general.php?page=cfw_settings');
+            <?php else: // Show login button
+
                 $wcKeys = generateKeys();
-                $apiKey = $wcKeys->consumer_key;
-                $apiSecret = $wcKeys->consumer_secret;
-                $QP = 'domain='.$websiteUrl.'&name='.$websiteName.'&timestamp='.$timestamp.'&redirectUri='.$redirectUri.'&apiKey='.$apiKey.'&apiSecret='.$apiSecret;
-                $login_url = CRYSTAL_URL.'/login/woocommerce/domain?'.$QP;?>
-                <a id="cfw-login" class="button-primary" href="<?=$login_url?>" title="<?php esc_attr_e( 'Login with crystal.io' ); ?>">
-                    <?php esc_attr_e( 'Login with crystal.io' ); ?>
-                </a>
-                <a href="<?=CRYSTAL_URL?>/action/woocommerceSignup/<?= $timestamp; ?>" class="button-primary white" title="<?php esc_attr_e( 'Sign up' ); ?>">
-                    <?php esc_attr_e( 'Sign up' ); ?>
-                </a>
-            <?php endif;
+                if(isset($wcKeys) && isset($wcKeys->consumer_key)) {
+	                //$wcKeys->revoke_url ?>
+                    <p>crystal for WooCommerce has been successfully installed.</p>
+                    <p>To get started login with crystal or sign-up if you don’t have an account.</p>
+                    <?php
+                    $date = new DateTime();
+                    $websiteUrl = get_site_url();
+                    $websiteName = get_bloginfo('name');
+                    $timestamp =  $date->getTimestamp();
+                    $redirectUri = admin_url('options-general.php?page=cfw_settings');
+                    $apiKey = $wcKeys->consumer_key;
+                    $apiSecret = $wcKeys->consumer_secret;
+                    $QP = 'domain='.$websiteUrl.'&name='.$websiteName.'&timestamp='.$timestamp.'&redirectUri='.$redirectUri.'&apiKey='.$apiKey.'&apiSecret='.$apiSecret;
+                    $login_url = CRYSTAL_URL.'/login/woocommerce/domain?'.$QP;?>
+                    <a id="cfw-login" class="button-primary" href="<?=$login_url?>" title="<?php esc_attr_e( 'Login with crystal.io' ); ?>">
+                        <?php esc_attr_e( 'Login with crystal.io' ); ?>
+                    </a>
+                    <a href="<?=CRYSTAL_URL?>/action/woocommerceSignup/<?= $timestamp; ?>" class="button-primary white" title="<?php esc_attr_e( 'Sign up' ); ?>">
+                        <?php esc_attr_e( 'Sign up' ); ?>
+                    </a>
+                <? } else { ?>
+                    <p>Oops! The plugin is available only for SSL certified URLs (https format).</p>
+                    <p> To start using crystal for WooCommerce provide your e-shop with a Secure Sockets Layer certificate.</p>
+                <? }
+            endif;
         endif; ?>
     </div>
 </div>
@@ -159,9 +166,16 @@ function generateKeys() {
         ],
     ]);
 
-    if ( is_wp_error( $response ) ) {
-        $error_message = $response->get_error_message();
-        echo "Something went wrong: $error_message";
+    if(isset($response->errors) && isset($response->errors['http_request_failed'])) {
+        $error = $response->errors['http_request_failed'][0];
+        if(strpos($error, 'SSL') > 0) {
+            add_action('admin_notices', function() {?>
+                <div class="error below-h3">
+                    <p>Service temporary unavailable. Come back soon.</p>
+                </div>
+            <?});
+            return null;
+        }
     } else {
         if($response['body'] !== '0') {
             $responseData = json_decode($response['body'])->data;

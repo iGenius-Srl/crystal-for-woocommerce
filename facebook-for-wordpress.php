@@ -2,6 +2,7 @@
  * Plugin Name: Facebook Pixel
  * Plugin URI: https://github.com/facebookincubator/facebook-for-woocommerce/
  * Description: The Facebook pixel is an analytics tool that helps you measure the effectiveness of your advertising. You can use the Facebook pixel to understand the actions people are taking on your website and reach audiences you care about.
+ * Version: 1.0.11
  * Text Domain: facebook-pixel
  */
 /**

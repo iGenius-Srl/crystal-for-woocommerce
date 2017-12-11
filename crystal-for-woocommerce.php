@@ -4,7 +4,7 @@
 * Description: crystal for WooCommerce is the smart plug-in to monitor your e-shop, maximize results and boost your business.
 * Author: crystalfordata
 * Author URI: https://crystal.io/
-* Version: 1.0.5
+* Version: 1.0.11
 * Text Domain: crystal-for-woocommerce
 */
 
@@ -13,11 +13,10 @@
 */
 
 const CRYSTAL_URL = 'https://crystal.io';
-//const CRYSTAL_URL = 'https://crystaldata.io';
-const CRYSTAL_API_URL = CRYSTAL_URL.'/api';
-const WEBHOOK_URL = CRYSTAL_API_URL.'/webhook/woocommerce';
+const CRYSTAL_API_URL = 'https://crystal.io/api';
+const WEBHOOK_URL = 'https://crystal.io/api/webhook/woocommerce';
 const REST_API_URL = 'cfw-api/v1';
-const DEFAULT_POST_TYPES = ['product', 'shop_coupon', 'shop_order'];
+$DEFAULT_POST_TYPES = ['product', 'shop_coupon', 'shop_order'];
 require_once('api/wc_api.php');
 
 if (!class_exists('WC_Crystalcommerce') ) :
@@ -37,6 +36,7 @@ if (!class_exists('WC_Crystalcommerce') ) :
 
         public function __construct() {
             add_action('admin_init', array( $this, 'detect_woocommerce_exist'));
+            add_action('admin_init', array( $this, 'cfw_activate_pixel'));
             add_action('plugins_loaded', array( $this, 'cfw_init'));
         }
 
@@ -47,6 +47,7 @@ if (!class_exists('WC_Crystalcommerce') ) :
                 $wc_api = new CFW_Api($access_token);
                 $wc_api->getUserData();
             }
+            $plugin = plugin_basename( __FILE__ );
             add_action( 'admin_menu', array($this, 'cfw_menu_page') );
             add_action( 'transition_post_status', array( $this, 'cfw_set_hooks'), 10, 3);
             add_action( 'updated_post_meta',  array( $this, 'cfw_post_updated'), 10, 4);
@@ -54,10 +55,19 @@ if (!class_exists('WC_Crystalcommerce') ) :
             add_action( 'woocommerce_new_customer',  array( $this, 'cfw_new_customer'), 10, 2);
             add_action( 'woocommerce_delete_customer',  array( $this, 'cfw_delete_customer'), 10, 2);
             add_filter( 'site_transient_update_plugins', array($this, 'cfw_disable_fb_updates'));
+            add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_add_settings_link') );
+        }
+
+        public function plugin_add_settings_link( $links ) {
+            $settings_link = '<a href="options-general.php?page=cfw_settings">' . __( 'Settings' ) . '</a>';
+            array_push( $links, $settings_link );
+          	return $links;
         }
 
         public function cfw_disable_fb_updates($value) {
-            unset( $value->response['crystal-for-woocommerce/facebook-for-wordpress.php'] );
+            if($value->response){
+                unset( $value->response['crystal-for-woocommerce/facebook-for-wordpress.php'] );
+            }
             return $value;
 
         }
@@ -120,7 +130,7 @@ if (!class_exists('WC_Crystalcommerce') ) :
          */
         public static function cfw_set_hooks($new_status, $old_status, $post) {
 
-            if ( array_search($post->post_type, DEFAULT_POST_TYPES) >= 0 ) {
+            if ( array_search($post->post_type, $DEFAULT_POST_TYPES) >= 0 ) {
 
                 $WC_Webhooks = new WC_Webhooks($post);
                 if ( 'publish' === $new_status && 'publish' !== $old_status ) {
@@ -145,7 +155,7 @@ if (!class_exists('WC_Crystalcommerce') ) :
         public static function cfw_post_updated($meta_id, $postID, $meta_key, $meta_value){
             $post = get_post($postID);
 
-            if ($post->post_status === 'publish' && array_search($post->post_type, DEFAULT_POST_TYPES) >= 0 ) {
+            if ($post->post_status === 'publish' && array_search($post->post_type, $DEFAULT_POST_TYPES) >= 0 ) {
                 $WC_Webhooks = new WC_Webhooks($post);
                 $args = [
                     'id' => $postID,

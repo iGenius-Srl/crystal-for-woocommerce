@@ -1,5 +1,25 @@
 *** crystal for WooCommerce Changelog ***
 
+2017-12-11 version 1.0.11
+ * Fixed error on activation
+
+2017-12-06 version 1.0.10
+ * Added settings link in plugins package
+
+2017-12-06 version 1.0.9
+ * Updated readme.txt
+
+2017-11-27 version 1.0.8
+ * Fixed activation error on wc_api
+ * Added deactivation call to crystal.io
+ * Check active plugin facebook pixel on crystal-for-woocommerce load
+
+2017-11-23 version 1.0.7
+ * Fixed activation error and replacing const declaration
+
+2017-11-22 version 1.0.6
+ * Fixed webhook error on connection and FB Pixel version
+
 2017-11-22 version 1.0.5
  * Fixed api error on connection
 
